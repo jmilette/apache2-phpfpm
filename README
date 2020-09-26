@@ -1,0 +1,14 @@
+/config/php/php.ini       replacable
+/config/php/fpm/pool.d/   phpfpm configs
+/config/httpd/conf.d/  apache configs
+/config/httpd/conf.d/mods.enable   text file with extra apache mods to load
+
+
+
+ENV VARS:
+
+php.<PHPKEY>  variables are injected into the container php.ini
+fpm.global.<KEY> variables are injected into global php-fpm.conf
+fpm.pool.<KEY> variables are injected into pool "www" fpm config.
+
+
