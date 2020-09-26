@@ -194,10 +194,7 @@ cp /config/httpd/docker.conf /etc/apache2/conf-enabled/
 
 
 #Enable apache modules
-for module in $APACHE_MODULES;
-do
-	a2enmod $APACHE_MODULES
-done
+a2enmod $APACHE_MODULES
 
 
 /usr/bin/supervisord -n
