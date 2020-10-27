@@ -1,8 +1,0 @@
-[program:fpm_exporter]
-command = /usr/local/bin/php-fpm_exporter server
-startsecs = 0
-autorestart = true
-stdout_logfile=/dev/stdout
-stdout_logfile_maxbytes=0
-stderr_logfile=/dev/stderr
-stderr_logfile_maxbytes=0
