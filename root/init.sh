@@ -184,6 +184,7 @@ if [[ -e /etc/apache2/sites-enabled/000-default.conf ]]; then rm /etc/apache2/si
 
 #For PHP socket
 mkdir /run/php
+if [[ -z $PHP_FPM_SCRAPE_URI ]]; then export PHP_FPM_SCRAPE_URI='unix:///run/php/php7.4-fpm.sock;/status'; fi
 
 #Install container configs
 cp /config/php/php.ini /etc/php/7.4/fpm/php.ini
