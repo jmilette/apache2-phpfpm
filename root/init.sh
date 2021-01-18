@@ -199,8 +199,6 @@ mkdir /run/php
 #Remove existing configs
 if [[ -e /etc/php/7.4/fpm/pool.d/www.conf ]]; then rm /etc/php/7.4/fpm/pool.d/www.conf; fi
 if [[ -e /etc/apache2/sites-enabled/000-default.conf ]]; then rm /etc/apache2/sites-enabled/000-default.conf; fi
-
-#wipe old configs
 if [[ -e /etc/php/7.4/fpm/php.ini ]]; then rm /etc/php/7.4/fpm/php.ini; fi
 if [[ -e /etc/php/7.4/cli/php.ini ]]; then rm /etc/php/7.4/cli/php.ini; fi
 if [[ -e /etc/php/7.4/cli/php.ini ]]; then rm /etc/php/7.4/cli/php.ini; fi
@@ -216,7 +214,7 @@ cp /config/php/php.ini /etc/php/7.4/fpm/php.ini
 cp /config/php/php.ini /etc/php/7.4/cli/php.ini
 cp /config/php/fpm/php-fpm.conf /etc/php/7.4/fpm/pool.d/container-fpm.conf
 cp /config/httpd/docker.conf /etc/apache2/conf-enabled/docker.conf
-cp -R /config/php/fpm/pool.d/* /etc/php/7.4/fpm/pool.d/
+cp -R /config/php/fpm/pool.d/*.conf /etc/php/7.4/fpm/pool.d/
 
 #Enable apache modules
 if [[ -n $APACHE_MODULES ]]; then a2enmod $APACHE_MODULES; fi
