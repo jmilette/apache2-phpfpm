@@ -12,7 +12,7 @@ fi
 if id "application" &>/dev/null; then
     deluser "application"
 fi
-useradd -ms /bin/bash -u $USER_ID -U application
+useradd -s /bin/bash -u $USER_ID -U application --no-create-home
 
 set -e
 
@@ -206,7 +206,10 @@ if [[ -e /etc/php/7.4/cli/php.ini ]]; then rm /etc/php/7.4/cli/php.ini; fi
 if [[ -e /etc/php/7.4/cli/php.ini ]]; then rm /etc/php/7.4/cli/php.ini; fi
 if [[ -e /etc/php/7.4/fpm/pool.d/container-fpm.conf ]]; then rm /etc/php/7.4/fpm/pool.d/container-fpm.conf; fi
 if [[ -e /etc/apache2/conf-enabled/docker.conf ]]; then rm /etc/apache2/conf-enabled/docker.conf; fi
-if [[ -d /etc/php/7.4/fpm/pool.d ]]; then rm /etc/php/7.4/fpm/pool.d/*; fi
+if [[ -d /etc/php/7.4/fpm/pool.d ]]; then 
+    rm -rf /etc/php/7.4/fpm/pool.d
+    mkdir /etc/php/7.4/fpm/pool.d
+fi
 
 #Install container configs
 cp /config/php/php.ini /etc/php/7.4/fpm/php.ini
