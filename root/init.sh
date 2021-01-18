@@ -30,7 +30,7 @@ function envGetValue() {
 }
 
 #back up container config
-if [ ! -f /config/php/php.ini.original]; then
+if [ ! -f /config/php/php.ini.original ]; then
     cp /config/php/php.ini /config/php/php.ini.original
 fi
 #clean php config
@@ -102,7 +102,7 @@ fi
 #######################################
 
 #back up container config
-if [ ! -f /config/php/fpm/php-fpm.conf.original]; then
+if [ ! -f /config/php/fpm/php-fpm.conf.original ]; then
     cp /config/php/fpm/php-fpm.conf /config/php/fpm/php-fpm.conf.original
 fi
 #clean php-fpm config
@@ -131,7 +131,7 @@ done
 #######################################
 
 #back up container config
-if [ ! -f /config/php/fpm/pool.d/application.conf.original]; then
+if [ ! -f /config/php/fpm/pool.d/application.conf.original ]; then
     cp /config/php/fpm/pool.d/application.conf /config/php/fpm/pool.d/application.conf.original
 fi
 #clean php-fpm pool config
