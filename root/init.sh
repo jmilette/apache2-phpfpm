@@ -9,7 +9,7 @@ if [[ -z $USER_ID ]]; then
 fi
 
 #delete user if already exists, i.e. container is restarted.
-if id "application" %>/dev/null; then
+if id "application" &>/dev/null; then
     deluser "application"
 fi
 useradd -ms /bin/bash -u $USER_ID -U application
