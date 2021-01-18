@@ -1,20 +1,20 @@
 #!/bin/bash
 shopt -s nullglob
 
-
 if [[ -z $GROUP_ID ]]; then
     GROUP_ID=1000
 fi
-
 if [[ -z $USER_ID ]]; then
     USER_ID=1000
 fi
 
+#delete user if already exists, i.e. container is restarted.
+if id "application" %>/dev/null; then
+    deluser "application"
+fi
 useradd -ms /bin/bash -u $USER_ID -U application
 
-
 set -e
-
 
 # List environment variables (based on prefix)
 function envListVars() {
@@ -24,12 +24,17 @@ function envListVars() {
         env | cut -d= -f1
     fi
 }
-
 # Get environment variable (even with dots in name)
 function envGetValue() {
     awk "BEGIN {print ENVIRON[\"$1\"]}"
 }
 
+#back up container config
+if [ ! -f /config/php/php.ini.original]; then
+    cp /config/php/php.ini /config/php/php.ini.original
+fi
+#clean php config
+cat /config/php/php.ini.original > /config/php/php.ini
 
 # Main php.ini config modifications
 echo '' >> /config/php/php.ini
@@ -42,7 +47,6 @@ for ENV_VAR in $(envListVars "php\."); do
     
     echo "$env_key = ${env_val}" >> /config/php/php.ini
 done
-
 
 if [[ -n "${PHP_DATE_TIMEZONE+x}" ]]; then
     echo "date.timezone = ${PHP_DATE_TIMEZONE}" >> /config/php/php.ini
@@ -93,10 +97,16 @@ if [[ -n "${PHP_SENDMAIL_PATH+x}" ]]; then
     echo "sendmail_path = ${PHP_SENDMAIL_PATH}" >> /config/php/php.ini
 fi
 
-
 #######################################
 # Config modifications for FPM - main
 #######################################
+
+#back up container config
+if [ ! -f /config/php/fpm/php-fpm.conf.original]; then
+    cp /config/php/fpm/php-fpm.conf /config/php/fpm/php-fpm.conf.original
+fi
+#clean php-fpm config
+cat /config/php/fpm/php-fpm.conf.original > /config/php/fpm/php-fpm.conf
 
 echo '' >> /config/php/fpm/php-fpm.conf
 echo '; container env settings' >> /config/php/fpm/php-fpm.conf
@@ -120,6 +130,12 @@ done
 # Config modifications for FPM - pool
 #######################################
 
+#back up container config
+if [ ! -f /config/php/fpm/pool.d/application.conf.original]; then
+    cp /config/php/fpm/pool.d/application.conf /config/php/fpm/pool.d/application.conf.original
+fi
+#clean php-fpm pool config
+cat /config/php/fpm/pool.d/application.conf.original > /config/php/fpm/pool.d/application.conf
 
 echo '' >> /config/php/fpm/pool.d/application.conf
 echo '; container env settings' >> /config/php/fpm/pool.d/application.conf
@@ -132,7 +148,6 @@ for ENV_VAR in $(envListVars "fpm\.pool\."); do
     
     echo "$env_key = ${env_val}" >> /config/php/fpm/pool.d/application.conf
 done
-
 
 if [[ -n "${FPM_PM_MAX_CHILDREN+x}" ]]; then
     echo "pm.max_children = ${FPM_PM_MAX_CHILDREN}" >> /config/php/fpm/pool.d/application.conf
@@ -175,27 +190,35 @@ if [[ -n "${PHP_SENDMAIL_PATH+x}" ]]; then
     echo "php_admin_value[sendmail_path] = ${PHP_SENDMAIL_PATH}" >> /config/php/fpm/pool.d/application.conf
 fi
 
-
+#For PHP socket
+if [ -d /run/php ]; then
+    rm -rf /run/php
+fi
+mkdir /run/php
 
 #Remove existing configs
 if [[ -e /etc/php/7.4/fpm/pool.d/www.conf ]]; then rm /etc/php/7.4/fpm/pool.d/www.conf; fi
 if [[ -e /etc/apache2/sites-enabled/000-default.conf ]]; then rm /etc/apache2/sites-enabled/000-default.conf; fi
 
-
-#For PHP socket
-mkdir /run/php
-if [[ -z $PHP_FPM_SCRAPE_URI ]]; then export PHP_FPM_SCRAPE_URI='unix:///run/php/php7.4-fpm.sock;/status'; fi
+#wipe old configs
+if [[ -e /etc/php/7.4/fpm/php.ini ]]; then rm /etc/php/7.4/fpm/php.ini; fi
+if [[ -e /etc/php/7.4/cli/php.ini ]]; then rm /etc/php/7.4/cli/php.ini; fi
+if [[ -e /etc/php/7.4/cli/php.ini ]]; then rm /etc/php/7.4/cli/php.ini; fi
+if [[ -e /etc/php/7.4/fpm/pool.d/container-fpm.conf ]]; then rm /etc/php/7.4/fpm/pool.d/container-fpm.conf; fi
+if [[ -e /etc/apache2/conf-enabled/docker.conf ]]; then rm /etc/apache2/conf-enabled/docker.conf; fi
+if [[ -d /etc/php/7.4/fpm/pool.d ]]; then rm /etc/php/7.4/fpm/pool.d/*; fi
 
 #Install container configs
 cp /config/php/php.ini /etc/php/7.4/fpm/php.ini
 cp /config/php/php.ini /etc/php/7.4/cli/php.ini
-cp -R /config/php/fpm/pool.d/* /etc/php/7.4/fpm/pool.d/
 cp /config/php/fpm/php-fpm.conf /etc/php/7.4/fpm/pool.d/container-fpm.conf
-cp /config/httpd/docker.conf /etc/apache2/conf-enabled/
-
+cp /config/httpd/docker.conf /etc/apache2/conf-enabled/docker.conf
+cp -R /config/php/fpm/pool.d/* /etc/php/7.4/fpm/pool.d/
 
 #Enable apache modules
 if [[ -n $APACHE_MODULES ]]; then a2enmod $APACHE_MODULES; fi
 
+#configure prometheus scraper
+if [[ -z $PHP_FPM_SCRAPE_URI ]]; then export PHP_FPM_SCRAPE_URI='unix:///run/php/php7.4-fpm.sock;/status'; fi
 
 /usr/bin/supervisord -n
