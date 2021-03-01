@@ -1,9 +1,16 @@
 #!/bin/bash
+
 shopt -s nullglob
 
+#Sets used PHP version
+if [[ -z $PHPVERSION ]]; then
+    PHPVERSION='7.4'
+fi
+#Sets GID
 if [[ -z $GROUP_ID ]]; then
     GROUP_ID=1000
 fi
+#Sets UID
 if [[ -z $USER_ID ]]; then
     USER_ID=1000
 fi
@@ -197,29 +204,29 @@ fi
 mkdir /run/php
 
 #Remove existing configs
-if [[ -e /etc/php/7.4/fpm/pool.d/www.conf ]]; then rm /etc/php/7.4/fpm/pool.d/www.conf; fi
+if [[ -e /etc/php/$PHPVERSION/fpm/pool.d/www.conf ]]; then rm /etc/php/$PHPVERSION/fpm/pool.d/www.conf; fi
 if [[ -e /etc/apache2/sites-enabled/000-default.conf ]]; then rm /etc/apache2/sites-enabled/000-default.conf; fi
-if [[ -e /etc/php/7.4/fpm/php.ini ]]; then rm /etc/php/7.4/fpm/php.ini; fi
-if [[ -e /etc/php/7.4/cli/php.ini ]]; then rm /etc/php/7.4/cli/php.ini; fi
-if [[ -e /etc/php/7.4/cli/php.ini ]]; then rm /etc/php/7.4/cli/php.ini; fi
-if [[ -e /etc/php/7.4/fpm/pool.d/container-fpm.conf ]]; then rm /etc/php/7.4/fpm/pool.d/container-fpm.conf; fi
+if [[ -e /etc/php/$PHPVERSION/fpm/php.ini ]]; then rm /etc/php/$PHPVERSION/fpm/php.ini; fi
+if [[ -e /etc/php/$PHPVERSION/cli/php.ini ]]; then rm /etc/php/$PHPVERSION/cli/php.ini; fi
+if [[ -e /etc/php/$PHPVERSION/cli/php.ini ]]; then rm /etc/php/$PHPVERSION/cli/php.ini; fi
+if [[ -e /etc/php/$PHPVERSION/fpm/pool.d/container-fpm.conf ]]; then rm /etc/php/$PHPVERSION/fpm/pool.d/container-fpm.conf; fi
 if [[ -e /etc/apache2/conf-enabled/docker.conf ]]; then rm /etc/apache2/conf-enabled/docker.conf; fi
-if [[ -d /etc/php/7.4/fpm/pool.d ]]; then 
-    rm -rf /etc/php/7.4/fpm/pool.d
-    mkdir /etc/php/7.4/fpm/pool.d
+if [[ -d /etc/php/$PHPVERSION/fpm/pool.d ]]; then 
+    rm -rf /etc/php/$PHPVERSION/fpm/pool.d
+    mkdir /etc/php/$PHPVERSION/fpm/pool.d
 fi
 
 #Install container configs
-cp /config/php/php.ini /etc/php/7.4/fpm/php.ini
-cp /config/php/php.ini /etc/php/7.4/cli/php.ini
-cp /config/php/fpm/php-fpm.conf /etc/php/7.4/fpm/pool.d/container-fpm.conf
+cp /config/php/php.ini /etc/php/$PHPVERSION/fpm/php.ini
+cp /config/php/php.ini /etc/php/$PHPVERSION/cli/php.ini
+cp /config/php/fpm/php-fpm.conf /etc/php/$PHPVERSION/fpm/pool.d/container-fpm.conf
 cp /config/httpd/docker.conf /etc/apache2/conf-enabled/docker.conf
-cp -R /config/php/fpm/pool.d/*.conf /etc/php/7.4/fpm/pool.d/
+cp -R /config/php/fpm/pool.d/*.conf /etc/php/$PHPVERSION/fpm/pool.d/
 
 #Enable apache modules
 if [[ -n $APACHE_MODULES ]]; then a2enmod $APACHE_MODULES; fi
 
 #configure prometheus scraper
-if [[ -z $PHP_FPM_SCRAPE_URI ]]; then export PHP_FPM_SCRAPE_URI='unix:///run/php/php7.4-fpm.sock;/status'; fi
+if [[ -z $PHP_FPM_SCRAPE_URI ]]; then export PHP_FPM_SCRAPE_URI='unix:///run/php/php$PHPVERSION-fpm.sock;/status'; fi
 
 /usr/bin/supervisord -n
