@@ -1,7 +1,7 @@
-ARG PHPVERSION=7.4
-ENV PHPVERSION=$PHPVERSION
-
 FROM ubuntu:18.04
+
+ARG PHPVERSION
+ENV PHPVERSION=$PHPVERSION
 RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y software-properties-common
 RUN DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:ondrej/php

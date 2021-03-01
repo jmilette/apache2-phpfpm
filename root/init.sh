@@ -226,6 +226,9 @@ cp /config/php/fpm/php-fpm.conf /etc/php/$PHPVERSION/fpm/pool.d/container-fpm.co
 cp /config/httpd/docker.conf /etc/apache2/conf-enabled/docker.conf
 cp -R /config/php/fpm/pool.d/*.conf /etc/php/$PHPVERSION/fpm/pool.d/
 
+#Add php socket config
+echo "listen = /run/php/php$PHPVERSION-fpm.sock" >> /etc/php/$PHPVERSION/fpm/pool.d/application.conf
+
 #Enable apache modules
 if [[ -n $APACHE_MODULES ]]; then a2enmod $APACHE_MODULES; fi
 
