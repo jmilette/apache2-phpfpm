@@ -6,6 +6,9 @@ shopt -s nullglob
 if [[ -z $PHPVERSION ]]; then
     PHPVERSION='7.4'
 fi
+
+a2enconf php$PHPVERSION-fpm
+
 #Sets GID
 if [[ -z $GROUP_ID ]]; then
     GROUP_ID=1000
