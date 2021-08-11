@@ -16,7 +16,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y php$PHPVERSION-fpm php$PHP
 
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y libmagickcore-6.q16-3-extra
-
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python3-geoip2
 RUN a2enmod proxy_fcgi setenvif
 RUN a2enconf php$PHPVERSION-fpm
 
