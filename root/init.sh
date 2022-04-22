@@ -139,6 +139,8 @@ function installConfigs() {
     cp /config/php/fpm/php-fpm.conf /etc/php/$PHPVERSION/fpm/pool.d/container-fpm.conf
     cp /config/httpd/docker.conf /etc/apache2/conf-enabled/docker.conf
     cp -R /config/php/fpm/pool.d/*.conf /etc/php/$PHPVERSION/fpm/pool.d/
+    #Fix permissions on crontab
+    chown root:root /etc/crontab
 }
 
 
