@@ -10,4 +10,4 @@ do
 done
 
 #Call API to update image in swarm
-curl --header "Content-Type: application/json" --request POST --data '{"stack":"'"$SWARM_STACK"'","tag":"'"$COMMIT_ID"'","service":"'"$SERVICE"'"}' http://192.168.3.2:5000/new-tag
+curl --header "Content-Type: application/json" --request POST --data '{"stack":"'"$SWARM_STACK"'","tag":"'"$COMMIT_ID"'","service":"'"$SWARM_SERVICE"'"}' http://192.168.3.2:5000/new-tag
