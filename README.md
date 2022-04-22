@@ -14,3 +14,8 @@ The majority of configuration can be done using environment variables, using met
 `fpm.global.<KEY>` variables are injected into global php-fpm.conf, for example: `fpm.global.log_level: error`  
 `fpm.pool.<KEY>` variables are injected into pool "www" fpm config, for example: `fpm.pool.pm.status_path: /status`  
 `APACHE_MODULES` space seperated list of modules for apache to load, for example:  `remoteip headers rewrite http2`  
+
+
+#### Apache MPM Event Configuration
+
+To override apache's MPM Event configuration, supply the desired config at `/config/httpd/conf.d/mpm_event.conf`

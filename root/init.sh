@@ -54,11 +54,13 @@ function cleanConfigs() {
     #Wipe phpfpm pool config
     rm -rf /etc/php/$PHPVERSION/fpm/pool.d && mkdir /etc/php/$PHPVERSION/fpm/pool.d
 
-    #Remove old configs
+    #Remove old configs, reset mpm_event.config
     if [[ -e /etc/php/$PHPVERSION/fpm/php.ini ]]; then rm /etc/php/$PHPVERSION/fpm/php.ini; fi
     if [[ -e /etc/php/$PHPVERSION/cli/php.ini ]]; then rm /etc/php/$PHPVERSION/cli/php.ini; fi
     if [[ -e /etc/php/$PHPVERSION/cli/php.ini ]]; then rm /etc/php/$PHPVERSION/cli/php.ini; fi
     if [[ -e /etc/apache2/conf-enabled/docker.conf ]]; then rm /etc/apache2/conf-enabled/docker.conf; fi
+    if [[ -e /etc/apache2/mods-enabled/mpm_event.conf ]]; then rm /etc/apache2/mods-enabled/mpm_event.conf && \
+        ln -s /etc/apache2/mods-available/mpm_event.conf /etc/apache2/mods-enabled/mpm_event.conf; fi
 }
 
 
@@ -139,6 +141,8 @@ function installConfigs() {
     cp /config/php/fpm/php-fpm.conf /etc/php/$PHPVERSION/fpm/pool.d/container-fpm.conf
     cp /config/httpd/docker.conf /etc/apache2/conf-enabled/docker.conf
     cp -R /config/php/fpm/pool.d/*.conf /etc/php/$PHPVERSION/fpm/pool.d/
+    if [[ -e /config/httpd/conf.d/mpm_event.conf ]]; then echo "Installing mpm_event.conf override" && rm /etc/apache2/mods-enabled/mpm_event.conf && \
+        ln -s /config/httpd/conf.d/mpm_event.conf /etc/apache2/mods-enabled/mpm_event.conf; fi
     #Fix permissions on crontab
     chown root:root /etc/crontab
 }
