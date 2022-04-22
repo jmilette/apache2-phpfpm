@@ -1,9 +1,10 @@
 #!/bin/bash
+set -e
 export COMMIT_ID=${GO_REVISION:0:10}
 
 for version in 7.4 8.0 8.1
 do
-    tag = "$DOCKER_IMAGE_NAME:php-$version-$COMMIT_ID"
+    tag="$DOCKER_IMAGE_NAME:php-$version-$COMMIT_ID"
     echo "Building $imagetag"
     docker buildx build -t $tag --build-arg PHPVERSION=$version --platform=linux/armhf,linux/arm64,linux/amd64 . --push
 done
