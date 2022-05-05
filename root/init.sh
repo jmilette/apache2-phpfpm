@@ -15,8 +15,12 @@ function createUser() {
     #delete user if already exists, i.e. container is restarted.
     if $(id "application" &>/dev/null); then
         deluser "application"
+        delgroup "application" || true
     fi
-    useradd -s /bin/bash -u $USER_ID -U application --no-create-home
+    addgroup --gid $GROUP_ID application
+    useradd -s /usr/sbin/nologin --uid $USER_ID --gid $GROUP_ID --no-create-home application
+    
+
 }
 
 # List environment variables (based on prefix)
