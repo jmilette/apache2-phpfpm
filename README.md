@@ -19,3 +19,5 @@ The majority of configuration can be done using environment variables, using met
 #### Apache MPM Event Configuration
 
 To override apache's MPM Event configuration, supply the desired config at `/config/httpd/conf.d/mpm_event.conf`
+
+Updated:  10/3/22
